@@ -55,7 +55,7 @@ final class CartTokenSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events = [];
     // Run before router_listener so we execute before access checks, and before
     // dynamic_page_cache so we can populate a session. The ensures proper
