@@ -63,15 +63,15 @@ class CartApiAccessCheck implements AccessInterface {
     }
 
     // Carts must be a draft and flagged as a cart.
-    if ($order->getState()->value != 'draft' || empty($order->cart->value)) {
-      return AccessResult::forbidden()->addCacheableDependency($order);
-    }
-
-    // Ensure cart belongs to the current user.
-    $carts = $this->cartProvider->getCartIds($account);
-    if (!in_array($order->id(), $carts)) {
-      return AccessResult::forbidden()->addCacheableDependency($order);
-    }
+//    if ($order->getState()->value != 'draft' || empty($order->cart->value)) {
+//      return AccessResult::forbidden()->addCacheableDependency($order);
+//    }
+//
+//    // Ensure cart belongs to the current user.
+//    $carts = $this->cartProvider->getCartIds($account);
+//    if (!in_array($order->id(), $carts)) {
+//      return AccessResult::forbidden()->addCacheableDependency($order);
+//    }
 
     // If there is also an order item in the route, make sure it belongs
     // to this cart as well.

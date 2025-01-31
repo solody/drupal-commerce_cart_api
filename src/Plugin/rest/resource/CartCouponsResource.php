@@ -103,7 +103,7 @@ class CartCouponsResource extends CartResourceBase {
    *   The resource response.
    */
   public function get(OrderInterface $commerce_order) {
-    $response = new ResourceResponse($commerce_order->get('coupons'));
+    $response = new ResourceResponse($commerce_order->get('coupons')->referencedEntities());
     $response->addCacheableDependency($commerce_order);
     return $response;
   }
@@ -125,19 +125,23 @@ class CartCouponsResource extends CartResourceBase {
    */
   public function patch(OrderInterface $commerce_order, array $unserialized) {
     // Add coupons.
-    if (!isset($unserialized['coupon_code'])) {
+    if (!isset($unserialized['coupon_codes'])) {
       throw new BadRequestHttpException('Coupon code not provided.');
     }
 
     $coupon_storage = $this->entityTypeManager->getStorage('commerce_promotion_coupon');
     assert($coupon_storage instanceof CouponStorageInterface);
 
-    $coupon = $coupon_storage->loadEnabledByCode($unserialized['coupon_code']);
-    if (!$coupon instanceof CouponInterface) {
-      throw new UnprocessableEntityHttpException(sprintf('%s is not a valid coupon code.', $unserialized['coupon_code']));
+    $coupons = [];
+    foreach ($unserialized['coupon_codes'] as $coupon_code) {
+      $coupon = $coupon_storage->loadEnabledByCode($coupon_code);
+      if (!$coupon instanceof CouponInterface) {
+        throw new UnprocessableEntityHttpException(sprintf('%s is not a valid coupon code.', $coupon_code));
+      }
+      $coupons[] = $coupon;
     }
 
-    $commerce_order->get('coupons')->setValue([$coupon]);
+    $commerce_order->get('coupons')->setValue($coupons);
     $this->validate($commerce_order);
     try {
       $commerce_order->setRefreshState(OrderInterface::REFRESH_ON_SAVE);
