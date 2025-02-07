@@ -130,11 +130,8 @@ class CartUpdateItemsResource extends CartResourceBase {
     }
     // We made it without errors, save the order items.
     foreach ($order_items as $order_item) {
-      $order_item->save();
+      $this->cartManager->updateOrderItem($commerce_order, $order_item);
     }
-
-    $commerce_order->setRefreshState(OrderInterface::REFRESH_ON_SAVE);
-    $commerce_order->save();
 
     // Return the updated entity in the response body.
     return new ModifiedResourceResponse($commerce_order, 200);
